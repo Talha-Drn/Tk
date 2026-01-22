@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soru</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    transition: background 1s ease;
+}
+
+#container {
+    text-align: center;
+    padding: 20px;
+    max-width: 600px;
+    z-index: 10;
+}
+
+h1 {
+    font-size: 18px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    position: relative;
+    z-index: 5;
+}
+
+button {
+    font-size: 18px;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+#yesBtn {
+    background: #4CAF50;
+    color: white;
+}
+
+#noBtn {
+    background: #f44336;
+    color: white;
+}
+
+/* Fullscreen evet */
+.fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    font-size: 40px;
+    border-radius: 0;
+    z-index: 20;
+}
+
+#finalMessage {
+    display: none;
+    font-size: 24px;
+    color: white;
+    white-space: pre-line;
+}
+
+/* Kalpler */
+.heart {
+    position: fixed;
+    font-size: 22px;
+    pointer-events: none;
+    animation: float 6s linear forwards;
+}
+
+@keyframes float {
+    to { transform: translateY(-120vh); opacity: 0; }
+}
+
+/* Patlayan kalpler */
+.burst {
+    position: fixed;
+    font-size: 26px;
+    animation: burst 1.5s ease-out forwards;
+}
+
+@keyframes burst {
+    to {
+        transform: translate(var(--x), var(--y)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Titreme */
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    25% { transform: translate(-10px, 5px); }
+    50% { transform: translate(10px, -5px); }
+    75% { transform: translate(-10px, -5px); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="container">
+    <h1 id="question">
+Yanlış ifadem yüzünden böyle kötü olduğunu biliyorum bunun için cidden özür dilerim beni affetmeni istiyorum seni çok seviyorum böyle olalım istemiyorum.  
+Beni affedermisin?
+    </h1>
+
+    <div class="buttons">
+        <button id="yesBtn">Evet</button>
+        <button id="noBtn">Hayır</button>
+    </div>
+
+    <div id="finalMessage"></div>
+</div>
+
+<script>
+const isim = "Küboşummm";
+let noCount = 0;
+
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const question = document.getElementById("question");
+const buttons = document.querySelector(".buttons");
+const finalMessage = document.getElementById("finalMessage");
+
+/* GERİ TUŞU */
+history.pushState(null, null, location.href);
+window.onpopstate = () => {
+    history.pushState(null, null, location.href);
+    alert("Kaçış yok 😌❤️");
+};
+
+/* HAYIR */
+noBtn.onclick = () => {
+    noCount++;
+
+    const scale = 1 + (noCount * 0.2); // %20 artış
+    yesBtn.style.transform = `scale(${scale})`;
+
+    noBtn.style.position = "fixed";
+
+    const minY = buttons.getBoundingClientRect().bottom + 20;
+    const maxY = window.innerHeight - 60;
+
+    noBtn.style.left = Math.random() * (window.innerWidth - 100) + "px";
+    noBtn.style.top = Math.random() * (maxY - minY) + minY + "px";
+
+    if (noCount >= 5) {
+        noBtn.style.display = "none";
+        yesBtn.classList.add("fullscreen");
+    }
+};
+
+/* EVET */
+yesBtn.onclick = () => {
+    navigator.vibrate?.([300,150,300]);
+
+    if (noCount >= 5) {
+        document.body.style.background = "#e91e63";
+        document.body.classList.add("shake");
+
+        question.style.display = "none";
+        buttons.style.display = "none";
+
+        finalMessage.style.display = "block";
+        typeWriter(
+`Teşekkür ederim hayatımm ❤️
+Seni çok seviyorumm
+İyi ki varsın <3`
+        );
+
+        for (let i = 0; i < 30; i++) burstHeart();
+        setInterval(createHeart, 600);
+        kalpSesi();
+    }
+};
+
+/* TYPEWRITER */
+function typeWriter(text, i = 0) {
+    if (i < text.length) {
+        finalMessage.innerHTML += text[i];
+        setTimeout(() => typeWriter(text, i + 1), 40);
+    }
+}
+
+/* KALPLER */
+function createHeart() {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerHTML = "❤️";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.bottom = "0";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 6000);
+}
+
+function burstHeart() {
+    const h = document.createElement("div");
+    h.className = "burst";
+    h.innerHTML = "❤️";
+    h.style.left = "50vw";
+    h.style.top = "50vh";
+    h.style.setProperty("--x", (Math.random()*500-250)+"px");
+    h.style.setProperty("--y", (Math.random()*500-250)+"px");
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 1500);
+}
+
+/* DOKUNMATİK */
+document.addEventListener("touchstart", createHeart);
+
+/* SES */
+function kalpSesi() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 120;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+}
+</script>
+
+</body>
+</html>
